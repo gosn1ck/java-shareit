@@ -14,6 +14,7 @@ import java.util.Optional;
 public class InMemoryUserRepository implements UserRepository {
 
     private final HashMap<Long, User> users = new HashMap<>();
+    private Long currentId = 0L;
 
     @Override
     public List<User> findAll() {
@@ -22,6 +23,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User save(User user) {
+        user.setId(nextId());
         users.put(user.getId(), user);
         return user;
     }
@@ -55,6 +57,10 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public void deleteById(Long id) {
         users.remove(id);
+    }
+
+    private Long nextId() {
+        return ++currentId;
     }
 
 }

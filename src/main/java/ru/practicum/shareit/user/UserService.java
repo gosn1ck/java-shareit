@@ -12,7 +12,6 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private Long currentId = 0L;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -32,7 +31,6 @@ public class UserService {
                     throw new InternalServerException("user with email %s already exists", dto.getEmail());
                 });
         var user = userMapper.userDtoToUser(dto);
-        user.setId(nextId());
         return userRepository.save(user);
     }
 
@@ -56,10 +54,6 @@ public class UserService {
 
     public void deleteById(Long id) {
         userRepository.deleteById(id);
-    }
-
-    public Long nextId() {
-        return ++currentId;
     }
 
 }
