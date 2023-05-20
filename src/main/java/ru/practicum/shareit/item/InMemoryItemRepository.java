@@ -68,7 +68,7 @@ public class InMemoryItemRepository implements ItemRepository {
     private boolean containsNameOrDescription(Item item, String search) {
         return item.getAvailable().equals(TRUE) &&
                 (item.getDescription().toLowerCase().contains(search)
-                || item.getName().toLowerCase() .contains(search));
+                || item.getName().toLowerCase().contains(search));
     }
 
 }
