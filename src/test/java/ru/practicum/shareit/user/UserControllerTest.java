@@ -120,7 +120,7 @@ class UserControllerTest {
         given(userService.add(dto)).willReturn(user);
         given(userService.update(dtoOnlyName, 1L)).willReturn(Optional.of(updatedUser));
 
-        mvc.perform(patch(END_POINT_PATH + "/" + updatedUser.getId())
+        mvc.perform(patch(END_POINT_PATH_WITH_ID, updatedUser.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoOnlyName)))
                 .andExpect(status().isOk())
@@ -157,7 +157,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Ручка получения всех пользователей по запросу возвращает 200 и список json c id пользователей")
+    @DisplayName("Ручка получения всех пользователей возвращает 200 и список json c пользователями")
     void shouldGetAllUsers() throws Exception {
         var user = getUser();
         var allUsers = List.of(user);
@@ -172,13 +172,13 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("Ручка получения пользователя по запросу возвращает 200 и json пользователя")
-    void shouldGetDirectorById() throws Exception {
+    @DisplayName("Ручка получения пользователя возвращает 200 и json пользователя")
+    void shouldGetUserById() throws Exception {
         var dto = getDto();
         var user = getUser();
 
         given(userService.add(dto)).willReturn(user);
-        given(userService.findByid(user.getId())).willReturn(Optional.of(user));
+        given(userService.findById(user.getId())).willReturn(Optional.of(user));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, user.getId()))
                 .andExpect(status().isOk())

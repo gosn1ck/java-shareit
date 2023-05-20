@@ -30,7 +30,7 @@ public class UserService {
                 .ifPresent(user -> {
                     throw new InternalServerException("user with email %s already exists", dto.getEmail());
                 });
-        var user = userMapper.userDtoToUser(dto);
+        var user = userMapper.dtoToEntity(dto);
         return userRepository.save(user);
     }
 
@@ -48,7 +48,7 @@ public class UserService {
         return userRepository.update(optUser.get());
     }
 
-    public Optional<User> findByid(Long id) {
+    public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 

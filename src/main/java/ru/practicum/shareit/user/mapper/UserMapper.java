@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
-    User userDtoToUser(UserDto dto);
+    User dtoToEntity(UserDto dto);
 
     void updateEntity(@MappingTarget User entity, UserDto dto);
 

@@ -21,7 +21,7 @@ class UserDtoValidTest {
     private static final String EMAIL = "ivan@yandex.ru";
 
     @Autowired
-    private Validator validator;
+    private Validator underTest;
 
     @DisplayName("Запрос создания пользователя проходит проверку валидации")
     @Test
@@ -30,25 +30,25 @@ class UserDtoValidTest {
         dto.setName(NAME);
         dto.setEmail(EMAIL);
 
-        Set<ConstraintViolation<UserDto>> validates = validator.validate(dto);
+        Set<ConstraintViolation<UserDto>> validates = underTest.validate(dto);
         assertEquals(0, validates.size());
     }
 
     @DisplayName("Запрос создания пользователя не должен проходить валидацию с пустым названием")
     @Test
-    void shouldNotAddGenreEmptyName() {
+    void shouldNotCheckUserEmptyName() {
         val dtoEmptyName = new UserDto();
         dtoEmptyName.setName(" ");
         dtoEmptyName.setEmail(EMAIL);
 
-        Set<ConstraintViolation<UserDto>> validates = validator.validate(dtoEmptyName);
+        Set<ConstraintViolation<UserDto>> validates = underTest.validate(dtoEmptyName);
         assertTrue(validates.size() > 0);
         assertEquals(validates.stream().findFirst().get().getMessage(), "Name should not be empty");
 
         val dtoNullName = new UserDto();
         dtoNullName.setEmail(EMAIL);
 
-        validates = validator.validate(dtoNullName);
+        validates = underTest.validate(dtoNullName);
         assertTrue(validates.size() > 0);
         assertEquals(validates.stream().findFirst().get().getMessage(), "Name should not be empty");
 

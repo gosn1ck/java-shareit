@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<User> get(@PathVariable("id") @Positive Long id) {
         log.info("Get user by id: {}", id);
-        var response = userService.findByid(id);
+        var response = userService.findById(id);
         return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -42,7 +42,7 @@ public class UserController {
         log.info("New user registration {}", userDto);
         if (errors.hasErrors()) {
             log.error("Error during new user registration: {}", errors.getAllErrors());
-            return ResponseEntity.badRequest().body(userMapper.userDtoToUser(userDto));
+            return ResponseEntity.badRequest().body(userMapper.dtoToEntity(userDto));
         }
         var savedUser = userService.add(userDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()

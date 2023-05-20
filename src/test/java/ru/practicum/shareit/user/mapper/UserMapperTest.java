@@ -23,7 +23,7 @@ class UserMapperTest {
     @Test
     void shouldMapUserDtoToUser() {
         val userDto = new UserDto(NAME, EMAIL);
-        val user = underTest.userDtoToUser(userDto);
+        val user = underTest.dtoToEntity(userDto);
 
         assertEquals(userDto.getName(), user.getName());
         assertEquals(userDto.getEmail(), user.getEmail());
@@ -36,7 +36,7 @@ class UserMapperTest {
         String updatedName = "Update";
         userDtoWithOnlyName.setName(updatedName);
 
-        var user = getUserForTest();
+        var user = getUser();
         String emailBeforeUpdate = user.getEmail();
         underTest.updateEntity(user, userDtoWithOnlyName);
 
@@ -47,7 +47,7 @@ class UserMapperTest {
         String updatedEmail = "update@yandex.ru";
         userDtoWithOnlyEmail.setEmail(updatedEmail);
 
-        user = getUserForTest();
+        user = getUser();
         String nameBeforeUpdate = user.getName();
         underTest.updateEntity(user, userDtoWithOnlyEmail);
 
@@ -56,7 +56,7 @@ class UserMapperTest {
 
     }
 
-    private User getUserForTest() {
+    private User getUser() {
         val user = new User();
         user.setName(NAME);
         user.setEmail(EMAIL);
