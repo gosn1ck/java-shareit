@@ -6,11 +6,12 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.Boolean.TRUE;
 
 @Repository
 @Qualifier("InMemory")
@@ -18,11 +19,6 @@ public class InMemoryItemRepository implements ItemRepository {
 
     private final HashMap<Long, Item> items = new HashMap<>();
     private Long currentId = 0L;
-
-    @Override
-    public List<Item> findAll() {
-        return new ArrayList<>(items.values());
-    }
 
     @Override
     public List<Item> getAllByUser(User user) {
@@ -57,8 +53,22 @@ public class InMemoryItemRepository implements ItemRepository {
         throw new NotFoundException("item with id %d not found", id);
     }
 
+    @Override
+    public List<Item> findByNameOrDescription(String searchString) {
+        var searchStringLowerCase = searchString.toLowerCase();
+        return items.values().stream()
+                .filter(item -> containsNameOrDescription(item, searchStringLowerCase))
+                .collect(Collectors.toList());
+    }
+
     private Long nextId() {
         return ++currentId;
+    }
+
+    private boolean containsNameOrDescription(Item item, String search) {
+        return item.getAvailable().equals(TRUE) &&
+                (item.getDescription().toLowerCase().contains(search)
+                || item.getName().toLowerCase() .contains(search));
     }
 
 }

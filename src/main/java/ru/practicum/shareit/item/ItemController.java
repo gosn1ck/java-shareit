@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.model.Item;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -31,17 +32,26 @@ public class ItemController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<Item> get(@PathVariable("id") @Positive Long id,
-                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Get item by id: {}; user id {}", id, userId);
-        var response = itemService.findById(id, userId);
+    public ResponseEntity<Item> get(@PathVariable("id") @Positive Long id) {
+        log.info("Get item by id: {}}", id);
+        var response = itemService.findById(id);
         return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<Item>> search(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                             @RequestParam(value = "text") String searchString) {
+        log.info("Get search items by {}, by userid {}", searchString, userId);
+        if (searchString.isBlank()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+        return ResponseEntity.ok(itemService.searchItems(searchString));
     }
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Item> add(@Valid @RequestBody ItemDto dto,
-                                    @RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Item> add(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                    @Valid @RequestBody ItemDto dto,
                                     Errors errors) {
         log.info("New item registration {}; user id {}", dto, userId);
         if (errors.hasErrors()) {
@@ -55,12 +65,12 @@ public class ItemController {
         return ResponseEntity.created(location).body(savedItem);
     }
 
-    @PatchMapping(consumes = "application/json", path = "/{userId}")
-    public ResponseEntity<Item> update(@RequestBody ItemDto dto,
-                                       @RequestHeader("X-Sharer-User-Id") Long userId,
-                                       @PathVariable("userId") @Positive Long itemId) {
-        log.info("Update item request {} with id {}; user id {}", dto, itemId, userId);
-        var optUpdatedItem = itemService.update(dto, itemId, userId);
+    @PatchMapping(consumes = "application/json", path = "/{id}")
+    public ResponseEntity<Item> update(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                       @PathVariable("id") @Positive Long id,
+                                       @RequestBody ItemDto dto) {
+        log.info("Update item request {} with id {}; user id {}", dto, id, userId);
+        var optUpdatedItem = itemService.update(dto, id, userId);
         return optUpdatedItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

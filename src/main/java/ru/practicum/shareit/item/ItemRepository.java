@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface ItemRepository {
 
-    List<Item> findAll();
-
     List<Item> getAllByUser(User user);
 
     Optional<Item> findById(Long id);
+
+    List<Item> findByNameOrDescription(String searchString);
 
     Item save(Item item);
 

@@ -217,7 +217,7 @@ class ItemControllerTest {
         Item item = getItem();
 
         given(itemService.add(dto, item.getId())).willReturn(item);
-        given(itemService.findById(item.getId(), item.getOwner().getId())).willReturn(Optional.of(item));
+        given(itemService.findById(item.getId())).willReturn(Optional.of(item));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, item.getId())
                 .header(SHARER_USER_HEADER, item.getOwner().getId()))

@@ -49,10 +49,11 @@ public class ItemService {
         return itemRepository.update(optItem.get());
     }
 
-    public Optional<Item> findById(Long id, Long userId) {
-        return userRepository.findById(userId)
-                .map(user -> itemRepository.findById(id))
-                .get();
+    public Optional<Item> findById(Long id) {
+        return itemRepository.findById(id);
     }
 
+    public List<Item> searchItems(String searchString) {
+        return itemRepository.findByNameOrDescription(searchString);
+    }
 }
