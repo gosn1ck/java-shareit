@@ -21,7 +21,7 @@ class ItemMapperTest {
     @Autowired
     private ItemMapper underTest;
 
-    @DisplayName("Запрос вещи мэпится в пользователя для записи в БД")
+    @DisplayName("Запрос вещи мэпится в вещь для записи в БД")
     @Test
     void shouldMapItemDtoToItem() {
         val itemDto = new ItemDto(NAME, DESCRIPTION, TRUE);

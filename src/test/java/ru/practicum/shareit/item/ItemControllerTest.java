@@ -214,7 +214,7 @@ class ItemControllerTest {
     }
 
     @Test
-    @DisplayName("Ручка получения вещи возвращает 200 и json пользователя")
+    @DisplayName("Ручка получения вещи возвращает 200 и json вещи")
     void shouldGetItemById() throws Exception {
         ItemDto dto = getDto();
         Item item = getItem();
