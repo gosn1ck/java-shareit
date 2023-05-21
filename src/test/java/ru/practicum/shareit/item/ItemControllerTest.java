@@ -12,9 +12,11 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -39,10 +41,11 @@ class ItemControllerTest {
     private static final String UPDATED_NAME = "Screwdriver accumulated";
     private static final String DESCRIPTION = "Designed for a versatile performance, can be used across all professional electrical maintenance and repair jobs.";
     private static final String UPDATED_DESCRIPTION = "Yet another description";
-
     private static final String END_POINT_PATH = "/items";
-    private static final String END_POINT_PATH_WITH_ID = "/items/{id}";
+    private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
+    private static final String END_POINT_PATH_SEARCH = END_POINT_PATH + "/search";
     private static final String SHARER_USER_HEADER = "X-Sharer-User-Id";
+    private static final String TEXT_PARAM = "text";
 
     @Test
     @DisplayName("Ручка создания по валидному запросу вещи возвращает 201 и json c id новой вещью")
@@ -246,6 +249,79 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].name").value(item.getName()))
                 .andExpect(jsonPath("$[0].available").value(item.getAvailable()))
                 .andExpect(jsonPath("$[0].description").value(item.getDescription()));
+    }
+
+    @Test
+    @DisplayName("Ручка поиска вещей возвращает 200 и список json c найденными вещами")
+    void shouldSearchAllItems() throws Exception {
+        ItemDto dto = getDto();
+        Item item = getItem();
+        item.setAvailable(TRUE);
+        var allItems = List.of(item);
+        String empty = "";
+
+        given(itemService.add(dto, item.getId())).willReturn(item);
+        given(itemService.searchItems(NAME)).willReturn(allItems);
+        given(itemService.searchItems(DESCRIPTION)).willReturn(allItems);
+        given(itemService.searchItems(empty)).willReturn(Collections.emptyList());
+
+        String searchByName = item.getName();
+        String searchByDescription = item.getDescription();
+
+        mvc.perform(get(END_POINT_PATH_SEARCH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .param(TEXT_PARAM, searchByName))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(item.getId()))
+                .andExpect(jsonPath("$[0].name").value(item.getName()))
+                .andExpect(jsonPath("$[0].available").value(item.getAvailable()))
+                .andExpect(jsonPath("$[0].description").value(item.getDescription()));
+
+        mvc.perform(get(END_POINT_PATH_SEARCH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .param(TEXT_PARAM, searchByDescription))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(item.getId()))
+                .andExpect(jsonPath("$[0].name").value(item.getName()))
+                .andExpect(jsonPath("$[0].available").value(item.getAvailable()))
+                .andExpect(jsonPath("$[0].description").value(item.getDescription()));
+
+        mvc.perform(get(END_POINT_PATH_SEARCH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .param(TEXT_PARAM, empty))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+    }
+
+    @Test
+    @DisplayName("Ручка поиска вещей возвращает 200 и пустой список json, так как нет свободных вещей")
+    void shouldNotSearchItems() throws Exception {
+        ItemDto dto = getDto();
+        Item item = getItem();
+        item.setAvailable(FALSE);
+
+        given(itemService.add(dto, item.getId())).willReturn(item);
+        given(itemService.searchItems(NAME)).willReturn(Collections.emptyList());
+        given(itemService.searchItems(DESCRIPTION)).willReturn(Collections.emptyList());
+
+        String searchByName = item.getName();
+        String searchByDescription = item.getDescription();
+
+        mvc.perform(get(END_POINT_PATH_SEARCH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .param(TEXT_PARAM, searchByName))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        mvc.perform(get(END_POINT_PATH_SEARCH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .param(TEXT_PARAM, searchByDescription))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
     }
 
     private static ItemDto getDto() {

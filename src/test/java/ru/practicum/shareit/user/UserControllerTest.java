@@ -39,7 +39,7 @@ class UserControllerTest {
     private static final String EMAIL = "ivan@yandex.ru";
     private static final String UPDATED_EMAIL = "update@yandex.ru";
     private static final String END_POINT_PATH = "/users";
-    private static final String END_POINT_PATH_WITH_ID = "/users/{id}";
+    private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
 
     @Test
     @DisplayName("Ручка создания по валидному запросу пользователя возвращает 201 и json c id нового пользователя")
