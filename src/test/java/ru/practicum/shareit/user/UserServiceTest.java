@@ -26,7 +26,7 @@ class UserServiceTest {
     private static final String UPDATED_EMAIL = "update@yandex.ru";
 
     @AfterEach
-    public void cleanUpEach(){
+    public void cleanUpEach() {
         repository.deleteAll();
     }
 

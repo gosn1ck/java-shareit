@@ -18,4 +18,6 @@ public interface ItemRepository {
 
     Optional<Item> update(Item item);
 
+    void deleteAll();
+
 }

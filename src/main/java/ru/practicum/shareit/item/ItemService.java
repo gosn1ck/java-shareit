@@ -42,7 +42,7 @@ public class ItemService {
         var optItem = itemRepository.findById(itemId);
         optItem.ifPresent(value -> {
                 if (!value.getOwner().getId().equals(userId)) {
-                    throw new NotFoundException("item with id %d not found", itemId);
+                    throw new NotFoundException("item with id %d not found from user id %d", itemId, userId);
                 }
                 itemMapper.updateEntity(value, dto);
         });

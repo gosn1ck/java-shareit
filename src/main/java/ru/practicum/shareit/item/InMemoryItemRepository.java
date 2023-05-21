@@ -61,6 +61,11 @@ public class InMemoryItemRepository implements ItemRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteAll() {
+        items.clear();
+    }
+
     private Long nextId() {
         return ++currentId;
     }
