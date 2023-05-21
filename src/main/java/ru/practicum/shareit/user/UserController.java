@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -21,7 +19,6 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping
     public ResponseEntity<List<User>> getAll() {
@@ -38,12 +35,8 @@ public class UserController {
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> add(@Valid @RequestBody UserDto userDto, Errors errors) {
+    public ResponseEntity<User> add(@Valid @RequestBody UserDto userDto) {
         log.info("New user registration {}", userDto);
-        if (errors.hasErrors()) {
-            log.error("Error during new user registration: {}", errors.getAllErrors());
-            return ResponseEntity.badRequest().body(userMapper.dtoToEntity(userDto));
-        }
         var savedUser = userService.add(userDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

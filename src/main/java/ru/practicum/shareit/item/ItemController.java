@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
@@ -23,7 +21,6 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService itemService;
-    private final ItemMapper itemMapper;
 
     @GetMapping
     public ResponseEntity<List<Item>> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
@@ -51,13 +48,8 @@ public class ItemController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Item> add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @Valid @RequestBody ItemDto dto,
-                                    Errors errors) {
+                                    @Valid @RequestBody ItemDto dto) {
         log.info("New item registration {}; user id {}", dto, userId);
-        if (errors.hasErrors()) {
-            log.error("Error during new item registration: {}; user id {}", errors.getAllErrors(), userId);
-            return ResponseEntity.badRequest().body(itemMapper.dtoToEntity(dto));
-        }
         var savedItem = itemService.add(dto, userId);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
