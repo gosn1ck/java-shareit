@@ -15,7 +15,6 @@ public class ItemDto {
     private String name;
     @NotBlank(message = "Description should not be empty")
     private String description;
-//    @JsonProperty("available")
     @NotNull(message = "Available field should not be empty")
     private Boolean available;
 }
