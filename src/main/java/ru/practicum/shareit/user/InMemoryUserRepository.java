@@ -59,6 +59,11 @@ public class InMemoryUserRepository implements UserRepository {
         users.remove(id);
     }
 
+    @Override
+    public void deleteAll() {
+        users.clear();
+    }
+
     private Long nextId() {
         return ++currentId;
     }
