@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserResponse;
+import ru.practicum.shareit.user.mapper.UserMapper;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -19,37 +21,43 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<List<UserResponse>> getAll() {
         log.info("Get all users");
-        return ResponseEntity.ok(userService.getAll());
+        return ResponseEntity.ok(userMapper.entitiesToUserResponses(userService.getAll()));
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<User> get(@PathVariable("id") @Positive Long id) {
+    public ResponseEntity<UserResponse> get(@PathVariable("id") @Positive Long id) {
         log.info("Get user by id: {}", id);
         var response = userService.findById(id);
-        return response.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return response.map(userMapper::entityToUserResponse)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> add(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<UserResponse> add(@Valid @RequestBody UserDto userDto) {
         log.info("New user registration {}", userDto);
         var savedUser = userService.add(userDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(savedUser.getId()).toUri();
-        return ResponseEntity.created(location).body(savedUser);
+        return ResponseEntity.created(location)
+                .body(userMapper.entityToUserResponse(savedUser));
     }
 
     @PatchMapping(consumes = "application/json", path = "/{userId}")
-    public ResponseEntity<User> update(@RequestBody UserDto userDto,
+    public ResponseEntity<UserResponse> update(@RequestBody UserDto userDto,
                                            @PathVariable("userId") @Positive Long id) {
         log.info("Update user request {} with id {}", userDto, id);
-        var optUpdatedUser = userService.update(userDto, id);
-        return optUpdatedUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        var response = userService.update(userDto, id);
+        return response.map(userMapper::entityToUserResponse)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")

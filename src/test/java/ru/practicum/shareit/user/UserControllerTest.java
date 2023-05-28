@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.InternalServerException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.mapper.UserMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest({UserController.class, UserMapperImpl.class})
 class UserControllerTest {
 
     @Autowired
@@ -31,7 +32,7 @@ class UserControllerTest {
     private UserService userService;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
+    @Autowired
     private UserMapper userMapper;
 
     private static final String NAME = "Ivan";
