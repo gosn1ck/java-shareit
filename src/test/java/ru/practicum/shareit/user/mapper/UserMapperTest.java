@@ -29,6 +29,17 @@ class UserMapperTest {
         assertEquals(userDto.getEmail(), user.getEmail());
     }
 
+    @DisplayName("Пользователь мэпится в пользователя для ответа контроллеру")
+    @Test
+    void shouldMapUserToUserRequest() {
+        val user = getUser();
+        val request = underTest.entityToUserResponse(user);
+
+        assertEquals(request.getId(), user.getId());
+        assertEquals(request.getName(), user.getName());
+        assertEquals(request.getEmail(), user.getEmail());
+    }
+
     @DisplayName("Поля пользователя обновляются по запросу пользователя")
     @Test
     void shouldUpdateEntity() {
@@ -58,6 +69,7 @@ class UserMapperTest {
 
     private User getUser() {
         val user = new User();
+        user.setId(1L);
         user.setName(NAME);
         user.setEmail(EMAIL);
         return user;
