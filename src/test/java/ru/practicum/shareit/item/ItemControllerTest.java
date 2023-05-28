@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.mapper.ItemMapperImpl;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ItemController.class)
+@WebMvcTest({ItemController.class, ItemMapperImpl.class})
 class ItemControllerTest {
 
     @Autowired
@@ -34,7 +35,7 @@ class ItemControllerTest {
     private ItemService itemService;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
+    @Autowired
     private ItemMapper itemMapper;
 
     private static final String NAME = "Screwdriver";
