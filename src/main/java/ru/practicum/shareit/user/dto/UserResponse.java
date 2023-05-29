@@ -1,11 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class User {
+@AllArgsConstructor
+public class UserResponse {
     private Long id;
     private String name;
     private String email;
