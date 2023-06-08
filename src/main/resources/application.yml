@@ -1,0 +1,30 @@
+server:
+    port: 8080
+
+logging:
+    level:
+        org:
+            springframework:
+                orm:
+                    jpa: INFO
+                    jpa.JpaTransactionManager: DEBUG
+                transaction: INFO
+                transaction.interceptor: TRACE
+spring:
+    application:
+        name: shareit
+    datasource:
+        username: shareit
+        password: shareit
+        url: jdbc:postgresql://localhost:5432/shareit
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: create-drop
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                format_sql: true
+    sql:
+        init:
+            mode: always
