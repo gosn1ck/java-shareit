@@ -19,7 +19,7 @@ public class ItemService {
     private final ItemMapper itemMapper;
 
     public ItemService(@Qualifier("InMemory") ItemRepository itemRepository,
-                       @Qualifier("InMemory") UserRepository userRepository,
+                       UserRepository userRepository,
                        ItemMapper itemMapper) {
         this.itemRepository = itemRepository;
         this.userRepository = userRepository;

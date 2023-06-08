@@ -30,6 +30,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(exception, NOT_FOUND);
     }
 
+    @ExceptionHandler(value = ClientErrorException.class)
+    public ResponseEntity<ApiException> handleException(ClientErrorException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(CONFLICT, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, CONFLICT);
+    }
+
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ApiException> handleException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
