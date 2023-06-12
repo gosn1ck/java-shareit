@@ -60,6 +60,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(exception, BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<ApiException> handleException(BadRequestException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(BAD_REQUEST, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
     @ExceptionHandler
     private ResponseEntity<ApiException> handleThrowableException(Throwable e) {
         log.error(e.getMessage(), e);

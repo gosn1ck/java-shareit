@@ -29,13 +29,13 @@ public class ItemController {
             @RequestParam(defaultValue = "0", required = false) int from,
             @RequestParam(defaultValue = "10", required = false) int size,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Get all items");
+        log.info("Get all items by user id: {}", userId);
         return ResponseEntity.ok(itemMapper.entitiesToItemResponses(itemService.getAllByUserId(userId, from, size)));
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<ItemResponse> get(@PathVariable("id") @Positive Long id) {
-        log.info("Get item by id: {}}", id);
+        log.info("Get item by id: {}", id);
         var response = itemService.findById(id);
         return response.map(itemMapper::entityToItemResponse)
                 .map(ResponseEntity::ok)
