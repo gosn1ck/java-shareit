@@ -25,9 +25,12 @@ public class ItemController {
     private final ItemMapper itemMapper;
 
     @GetMapping
-    public ResponseEntity<List<ItemResponse>> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<List<ItemResponse>> getAll(
+            @RequestParam(defaultValue = "0", required = false) int from,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Get all items");
-        return ResponseEntity.ok(itemMapper.entitiesToItemResponses(itemService.getAllByUserId(userId)));
+        return ResponseEntity.ok(itemMapper.entitiesToItemResponses(itemService.getAllByUserId(userId, from, size)));
     }
 
     @GetMapping(path = "/{id}")
@@ -40,13 +43,16 @@ public class ItemController {
     }
 
     @GetMapping(path = "/search")
-    public ResponseEntity<List<ItemResponse>> search(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @RequestParam(value = "text") String searchString) {
+    public ResponseEntity<List<ItemResponse>> search(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "0", required = false) int from,
+            @RequestParam(defaultValue = "10", required = false) int size,
+            @RequestParam(value = "text") String searchString) {
         log.info("Get search items by {}, by userid {}", searchString, userId);
         if (searchString.isBlank()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        return ResponseEntity.ok(itemMapper.entitiesToItemResponses(itemService.searchItems(searchString)));
+        return ResponseEntity.ok(itemMapper.entitiesToItemResponses(itemService.searchItems(searchString, from, size)));
     }
 
     @PostMapping(consumes = "application/json")

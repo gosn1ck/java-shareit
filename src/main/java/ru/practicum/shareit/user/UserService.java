@@ -2,6 +2,7 @@ package ru.practicum.shareit.user;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ClientErrorException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -25,6 +27,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Transactional
     public User add(UserDto dto) {
         var user = userMapper.dtoToEntity(dto);
         try {
@@ -35,6 +38,7 @@ public class UserService {
 
     }
 
+    @Transactional
     public Optional<User> update(UserDto dto, Long id) {
         var optUser = userRepository.findById(id);
         optUser.ifPresent(value ->
@@ -51,6 +55,7 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }

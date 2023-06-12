@@ -2,8 +2,10 @@ package ru.practicum.shareit.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -49,6 +51,20 @@ public class ApiExceptionHandler {
         ApiException exception = new ApiException(BAD_REQUEST, errorMessage, ZonedDateTime.now());
 
         return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = MissingRequestHeaderException.class)
+    public ResponseEntity<ApiException> handleException(MissingRequestHeaderException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(BAD_REQUEST, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<ApiException> handleThrowableException(Throwable e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(INTERNAL_SERVER_ERROR, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
