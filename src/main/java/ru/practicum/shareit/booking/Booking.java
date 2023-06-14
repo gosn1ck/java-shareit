@@ -8,6 +8,9 @@ import ru.practicum.shareit.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -20,13 +23,13 @@ public class Booking {
     private LocalDateTime start;
     @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY, cascade = ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User booker;
-    @ManyToOne
+    @ManyToOne(fetch = LAZY, cascade = ALL)
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
     private Item item;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Status status;
+    private BookingStatus status;
 }

@@ -28,8 +28,8 @@ public class BookingController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookingResponse> add(
-            @Valid @RequestBody BookingDto dto,
-            @RequestHeader("X-Sharer-User-Id") Long userId) {
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @Valid @RequestBody BookingDto dto) {
         log.info("New booking registration {}; user id {}", dto, userId);
         if (!dto.validate()) {
             throw new BadRequestException("start booking must be before end booking: %s", dto.toString());
@@ -42,18 +42,20 @@ public class BookingController {
                 .body(bookingMapper.entityToBookingResponse(savedBooking));
     }
 
-    @PatchMapping(consumes = "application/json", path = "/{bookingId}")
-    public ResponseEntity<BookingResponse> approve(@PathVariable @Positive Long id,
-                              @RequestHeader("X-Sharer-User-Id") Long userId,
-                              @RequestParam Boolean approved) {
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<BookingResponse> approve(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PathVariable("id") @Positive Long id,
+            @RequestParam Boolean approved) {
         log.info("approve item by id: {}; user id: {}", id, userId);
         var response = bookingService.approve(id, userId, approved);
         return ResponseEntity.ok(bookingMapper.entityToBookingResponse(response));
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<BookingResponse> getById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                   @PathVariable("id") @Positive Long id) {
+    public ResponseEntity<BookingResponse> getById(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PathVariable("id") @Positive Long id) {
         log.info("Get booking by id: {}, user id: {} ", id, userId);
         var response = bookingService.getById(id, userId);
         return response.map(bookingMapper::entityToBookingResponse)
@@ -64,21 +66,17 @@ public class BookingController {
     @GetMapping(path = "/owner")
     public ResponseEntity<List<BookingResponse>> getAllOwner(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(defaultValue = "0") int from,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
         log.info("Get owner bookings by user id: {}, state: {} ",  userId, state);
-        var response = bookingService.getAllOwner(userId, state, from, size);
+        var response = bookingService.getAllOwner(userId, state);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
 
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAllBooker(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(defaultValue = "0") int from,
-            @RequestParam(defaultValue = "10") int size) {
-        var response = bookingService.getAllBooker(userId, state, from, size);
+            @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
+        var response = bookingService.getAllBooker(userId, state);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
 
