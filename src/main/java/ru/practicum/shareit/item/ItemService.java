@@ -58,7 +58,9 @@ public class ItemService {
     public Item add(ItemDto dto, Long userId) {
         var item = itemMapper.dtoToEntity(dto);
         userRepository.findById(userId).ifPresentOrElse(item::setOwner,
-                () -> {throw new NotFoundException("user with id %d not found", userId);});
+                () -> {
+                    throw new NotFoundException("user with id %d not found", userId);
+        });
 
         return itemRepository.save(item);
     }

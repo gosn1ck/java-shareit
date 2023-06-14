@@ -83,9 +83,12 @@ public class BookingService {
                     if (!value.getBooker().getId().equals(userId)
                             && !value.getItem().getOwner().getId().equals(userId)) {
                         throw new NotFoundException("booking with id %d not found from user id %d", id, userId);
-                    }}
+                    }
+                }
                 ,
-                () -> { throw new NotFoundException("booking with id %d not found", id);});
+                () -> {
+                    throw new NotFoundException("booking with id %d not found", id);
+                });
 
         return Optional.of(optBooking.get());
     }
