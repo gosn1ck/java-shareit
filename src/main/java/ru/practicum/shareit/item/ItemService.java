@@ -103,6 +103,7 @@ public class ItemService {
         var comment = commentMapper.dtoToEntity(dto);
         comment.setItem(item);
         comment.setAuthor(user);
+        comment.setCreated(LocalDateTime.now());
 
         return commentRepository.save(comment);
     }
