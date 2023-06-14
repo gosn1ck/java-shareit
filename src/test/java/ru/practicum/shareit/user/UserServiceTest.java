@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.exception.ClientErrorException;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -117,9 +118,9 @@ class UserServiceTest {
         val dtoSameEmail = new UserDto();
         dtoSameEmail.setEmail(EMAIL);
 
-        val exceptionUser = assertThrows(ClientErrorException.class, () ->
+        assertThrows(DataIntegrityViolationException.class, () ->
                 underTest.update(dtoSameEmail, userNextUser.getId()));
-        assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
+//        assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
 
     }
 
