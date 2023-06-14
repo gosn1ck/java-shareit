@@ -84,8 +84,7 @@ public class BookingService {
                             && !value.getItem().getOwner().getId().equals(userId)) {
                         throw new NotFoundException("booking with id %d not found from user id %d", id, userId);
                     }
-                }
-                ,
+                },
                 () -> {
                     throw new NotFoundException("booking with id %d not found", id);
                 });
