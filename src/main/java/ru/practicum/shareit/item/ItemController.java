@@ -38,7 +38,7 @@ public class ItemController {
                     commentMapper.entitiesToCommentResponses(
                             itemService.findCommentsByItemId(
                                     item.getId())));
-            itemService.fieldsToItemDto(item);
+            itemService.updateBookingFields(item);
         });
         return ResponseEntity.ok(items);
     }
@@ -48,7 +48,7 @@ public class ItemController {
                                              @PathVariable("id") @Positive Long id) {
         log.info("Get item by id: {}", id);
         var optionalItem = itemService.findById(id);
-        if (!optionalItem.isPresent()) {
+        if (optionalItem.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -56,7 +56,7 @@ public class ItemController {
         var comments = itemService.findCommentsByItemId(itemResponse.getId());
         itemResponse.setComments(commentMapper.entitiesToCommentResponses(comments));
         if (optionalItem.get().getOwner().getId().equals(userId)) {
-            itemResponse = itemService.fieldsToItemDto(itemResponse);
+            itemResponse = itemService.updateBookingFields(itemResponse);
         }
         return ResponseEntity.ok(itemResponse);
 

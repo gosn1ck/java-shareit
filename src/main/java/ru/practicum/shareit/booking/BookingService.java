@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import static ru.practicum.shareit.booking.BookingStatus.*;
 
 @Service
+@RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
@@ -26,20 +29,9 @@ public class BookingService {
 
     private final Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
-    public BookingService(BookingRepository bookingRepository,
-                          UserRepository userRepository,
-                          ItemRepository itemRepository,
-                          BookingMapper bookingMapper) {
-        this.bookingRepository = bookingRepository;
-        this.userRepository = userRepository;
-        this.itemRepository = itemRepository;
-        this.bookingMapper = bookingMapper;
-    }
-
     @Transactional
     public Booking add(BookingDto dto, Long userId) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("user with id %d not found", userId));
+        var user = getUser(userId);
         var item = itemRepository.findById(dto.getItemId())
                 .orElseThrow(() -> new NotFoundException("item with id %d not found", dto.getItemId()));
         if (!item.getAvailable()) {
@@ -94,8 +86,7 @@ public class BookingService {
 
     @Transactional(readOnly = true)
     public List<Booking> getAllOwner(Long userId, BookingState state) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("user with id %d not found", userId));
+        var user = getUser(userId);
         List<Booking> bookings = new ArrayList<>();
 
         switch (state) {
@@ -127,8 +118,7 @@ public class BookingService {
 
     @Transactional(readOnly = true)
     public List<Booking> getAllBooker(Long userId, BookingState state) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("user with id %d not found", userId));
+        var user = getUser(userId);
         List<Booking> bookings = new ArrayList<>();
 
         switch (state) {
@@ -156,6 +146,11 @@ public class BookingService {
         }
 
         return bookings;
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("user with id %d not found", userId));
     }
 
 }

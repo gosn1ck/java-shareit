@@ -14,5 +14,5 @@ public class CommentDto {
     @NotBlank(message = "Text should not be empty")
     private String text;
     private String authorName;
-    private LocalDateTime created = LocalDateTime.now();
+    private LocalDateTime created;
 }
