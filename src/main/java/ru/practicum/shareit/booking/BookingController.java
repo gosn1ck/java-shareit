@@ -31,9 +31,6 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @Valid @RequestBody BookingDto dto) {
         log.info("New booking registration {}; user id {}", dto, userId);
-        if (!dto.validate()) {
-            throw new BadRequestException("start booking must be before end booking: %s", dto.toString());
-        }
         var savedBooking = bookingService.add(dto, userId);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
