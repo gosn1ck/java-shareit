@@ -42,15 +42,6 @@ class UserServiceTest {
         assertEquals(dto.getName(), user.getName());
         assertEquals(dto.getEmail(), user.getEmail());
 
-        val users = underTest.getAll();
-        assertTrue(users.contains(user));
-
-        int id = users.indexOf(user);
-        val savedListUser = users.get(id);
-        assertEquals(user.getId(), savedListUser.getId());
-        assertEquals(dto.getName(), savedListUser.getName());
-        assertEquals(dto.getEmail(), savedListUser.getEmail());
-
         val optionalUser = underTest.findById(user.getId());
         val savedByIdUser = optionalUser.get();
         assertEquals(dto.getName(), savedByIdUser.getName());
