@@ -8,6 +8,6 @@ import java.time.ZonedDateTime;
 @Data
 public class ApiException {
     private final HttpStatus status;
-    private final String message;
+    private final String error;
     private final ZonedDateTime dateTime;
 }

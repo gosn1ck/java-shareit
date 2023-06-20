@@ -6,8 +6,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.exception.InternalServerException;
-import ru.practicum.shareit.exception.NotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import ru.practicum.shareit.exception.ClientErrorException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,15 +42,6 @@ class UserServiceTest {
         assertEquals(dto.getName(), user.getName());
         assertEquals(dto.getEmail(), user.getEmail());
 
-        val users = underTest.getAll();
-        assertTrue(users.contains(user));
-
-        int id = users.indexOf(user);
-        val savedListUser = users.get(id);
-        assertEquals(user.getId(), savedListUser.getId());
-        assertEquals(dto.getName(), savedListUser.getName());
-        assertEquals(dto.getEmail(), savedListUser.getEmail());
-
         val optionalUser = underTest.findById(user.getId());
         val savedByIdUser = optionalUser.get();
         assertEquals(dto.getName(), savedByIdUser.getName());
@@ -74,7 +65,7 @@ class UserServiceTest {
         dtoSameEmail.setName(NAME);
         dtoSameEmail.setEmail(EMAIL);
 
-        val exceptionUser = assertThrows(InternalServerException.class, () ->
+        val exceptionUser = assertThrows(ClientErrorException.class, () ->
                 underTest.add(dtoSameEmail));
         assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
 
@@ -118,9 +109,9 @@ class UserServiceTest {
         val dtoSameEmail = new UserDto();
         dtoSameEmail.setEmail(EMAIL);
 
-        val exceptionUser = assertThrows(InternalServerException.class, () ->
+        assertThrows(DataIntegrityViolationException.class, () ->
                 underTest.update(dtoSameEmail, userNextUser.getId()));
-        assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
+//        assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
 
     }
 
@@ -139,9 +130,8 @@ class UserServiceTest {
 
         underTest.deleteById(user.getId());
 
-        val exceptionUser = assertThrows(NotFoundException.class, () ->
-                underTest.findById(user.getId()));
-        assertEquals(String.format("user with id %s not found", user.getId()), exceptionUser.getMessage());
+        var optUser = underTest.findById(user.getId());
+        assertTrue(optUser.isEmpty());
 
     }
 

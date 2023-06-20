@@ -1,8 +1,10 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.InternalServerException;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.ClientErrorException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
@@ -10,48 +12,46 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public UserService(@Qualifier("InMemory") UserRepository userRepository,
-                       UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
-
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
+    @Transactional
     public User add(UserDto dto) {
-        userRepository.findByEmail(dto.getEmail())
-                .ifPresent(user -> {
-                    throw new InternalServerException("user with email %s already exists", dto.getEmail());
-                });
         var user = userMapper.dtoToEntity(dto);
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new ClientErrorException("user with email %s already exists", dto.getEmail());
+        }
+
     }
 
+    @Transactional
     public Optional<User> update(UserDto dto, Long id) {
-        userRepository.findByEmail(dto.getEmail())
-                .ifPresent(user -> {
-                    if (!user.getId().equals(id)) {
-                        throw new InternalServerException("user with email %s already exists", dto.getEmail());
-                    }
-                });
         var optUser = userRepository.findById(id);
         optUser.ifPresent(value ->
             userMapper.updateEntity(value, dto)
         );
-        return userRepository.update(optUser.get());
+        try {
+            return Optional.of(userRepository.save(optUser.get()));
+        } catch (DataIntegrityViolationException e) {
+            throw new ClientErrorException("user with email %s already exists", dto.getEmail());
+        }
     }
 
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
