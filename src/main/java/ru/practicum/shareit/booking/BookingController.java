@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -11,12 +12,14 @@ import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -62,17 +65,26 @@ public class BookingController {
     @GetMapping(path = "/owner")
     public ResponseEntity<List<BookingResponse>> getAllOwner(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
+            @RequestParam(name = "state", defaultValue = "ALL") BookingState state,
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "minimum value for from param is 0") Integer from,
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "minimum value for size param is 1") Integer size) {
         log.info("Get owner bookings by user id: {}, state: {} ",  userId, state);
-        var response = bookingService.getAllOwner(userId, state);
+        var response = bookingService.getAllOwner(userId, state, from, size);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
 
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAllBooker(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
-        var response = bookingService.getAllBooker(userId, state);
+            @RequestParam(name = "state", defaultValue = "ALL") BookingState state,
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "minimum value for from param is 0") Integer from,
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "minimum value for size param is 1") Integer size) {
+        log.info("Get all bookings by user id: {}, state: {} ",  userId, state);
+        var response = bookingService.getAllBooker(userId, state, from, size);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
 

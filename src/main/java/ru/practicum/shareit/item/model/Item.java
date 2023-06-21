@@ -28,10 +28,10 @@ public class Item {
     @Column(name = "is_available")
     private Boolean available;
     @ManyToOne(fetch = LAZY, cascade = ALL)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User owner;
     @ManyToOne(fetch = LAZY, cascade = ALL)
-    @JoinColumn(name = "target_request_id")
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
     private ItemRequest request;
 
 }

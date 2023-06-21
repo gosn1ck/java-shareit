@@ -24,7 +24,7 @@ class ItemMapperTest {
     @DisplayName("Запрос вещи мэпится в вещь для записи в БД")
     @Test
     void shouldMapItemDtoToItem() {
-        val itemDto = new ItemDto(NAME, DESCRIPTION, TRUE);
+        val itemDto = new ItemDto(NAME, DESCRIPTION, TRUE, 1L);
         val item = underTest.dtoToEntity(itemDto);
 
         assertEquals(itemDto.getName(), item.getName());
