@@ -44,6 +44,18 @@ class ItemMapperTest {
         assertEquals(request.getAvailable(), item.getAvailable());
     }
 
+    @DisplayName("Вещь мэпится в вещь для ответа контроллера")
+    @Test
+    void shouldMapItemToItemRequestResponse() {
+        val item = getItem();
+        val request = underTest.entityToItemRequestResponse(item);
+
+        assertEquals(request.getId(), item.getId());
+        assertEquals(request.getName(), item.getName());
+        assertEquals(request.getDescription(), item.getDescription());
+        assertEquals(request.getAvailable(), item.getAvailable());
+    }
+
     @DisplayName("Поля вещи обновляются по запросу вещи")
     @Test
     void shouldUpdateEntity() {
