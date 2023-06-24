@@ -19,13 +19,6 @@ import static org.springframework.http.HttpStatus.*;
 @Slf4j
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(value = InternalServerException.class)
-    public ResponseEntity<ApiException> handleException(InternalServerException e) {
-        log.error(e.getMessage(), e);
-        ApiException exception = new ApiException(INTERNAL_SERVER_ERROR, e.getMessage(), ZonedDateTime.now());
-        return new ResponseEntity<>(exception, INTERNAL_SERVER_ERROR);
-    }
-
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<ApiException> handleException(NotFoundException e) {
         log.error(e.getMessage(), e);

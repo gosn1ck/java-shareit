@@ -90,7 +90,7 @@ public class ItemService {
         var item = getItem(itemId);
         if (bookingRepository.findAllByBookerAndItemAndStatusEqualsAndEndIsBefore(user, item, APPROVED,
                 LocalDateTime.now()).isEmpty()) {
-            throw new BadRequestException("item with id %d was not booked by user %d", itemId, userId);
+            throw new BadRequestException("item with id %d not found", itemId);
         }
 
         var comment = commentMapper.dtoToEntity(dto);

@@ -10,12 +10,4 @@ public class BadRequestException extends RuntimeException {
         super(String.format(message, id));
     }
 
-    public BadRequestException(String message, Long firstId, Long secondId) {
-        super(String.format(message, firstId, secondId));
-    }
-
-    public BadRequestException(String message, String part) {
-        super(String.format(message, part));
-    }
-
 }

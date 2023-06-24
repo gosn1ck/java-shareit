@@ -186,6 +186,10 @@ class BookingServiceTest {
         bookings = underTest.getAllOwner(owner.getId(), REJECTED, 1, 10);
         assertTrue(bookings.size() > 0);
 
+        var exceptionBadRequest = assertThrows(BadRequestException.class, () ->
+                underTest.getAllOwner(owner.getId(), UNSUPPORTED_STATUS, 1, 10));
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", exceptionBadRequest.getMessage());
+
     }
 
     @DisplayName("Получен список бронирований бронировавшего")
@@ -229,6 +233,10 @@ class BookingServiceTest {
         underTest.approve(booking.getId(), owner.getId(), FALSE);
         bookings = underTest.getAllBooker(booker.getId(), REJECTED, 1, 10);
         assertTrue(bookings.size() > 0);
+
+        var exceptionBadRequest = assertThrows(BadRequestException.class, () ->
+                underTest.getAllBooker(booker.getId(), UNSUPPORTED_STATUS, 1, 10));
+        assertEquals("Unknown state: UNSUPPORTED_STATUS", exceptionBadRequest.getMessage());
 
     }
 
