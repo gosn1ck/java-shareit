@@ -11,7 +11,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.Set;
 
-import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

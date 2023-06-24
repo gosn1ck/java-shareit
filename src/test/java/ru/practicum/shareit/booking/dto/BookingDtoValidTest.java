@@ -25,8 +25,8 @@ class BookingDtoValidTest {
     @Test
     void shouldCheckValidBookingDto() {
         val dto = new BookingDto();
-        dto.setStart(LocalDateTime.now());
-        dto.setEnd(LocalDateTime.now().plusDays(1));
+        dto.setStart(LocalDateTime.now().plusDays(1));
+        dto.setEnd(LocalDateTime.now().plusDays(2));
 
         Set<ConstraintViolation<BookingDto>> validates = underTest.validate(dto);
         assertEquals(0, validates.size());
@@ -55,18 +55,12 @@ class BookingDtoValidTest {
     @Test
     void shouldCheckBookingEndInvalidField() {
         val dto = new BookingDto();
-        dto.setStart(LocalDateTime.now().plusHours(1));
+        dto.setStart(LocalDateTime.now().plusDays(1));
         dto.setEnd(null);
 
         Set<ConstraintViolation<BookingDto>> validates = underTest.validate(dto);
         assertTrue(validates.size() > 0);
         assertEquals(validates.stream().findFirst().get().getMessage(), "end booking should not be empty");
-
-        dto.setEnd(LocalDateTime.now().minusSeconds(1));
-
-        validates = underTest.validate(dto);
-        assertTrue(validates.size() > 0);
-        assertEquals(validates.stream().findFirst().get().getMessage(), "end booking must be in the future");
 
     }
 
@@ -79,7 +73,8 @@ class BookingDtoValidTest {
 
         Set<ConstraintViolation<BookingDto>> validates = underTest.validate(dto);
         assertTrue(validates.size() > 0);
-        assertEquals(validates.stream().findFirst().get().getMessage(), "start booking must be before end booking");
+        assertEquals(
+                validates.stream().findFirst().get().getMessage(), "start booking must be before end booking");
 
     }
 

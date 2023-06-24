@@ -117,12 +117,11 @@ class BookingControllerTest {
     @Test
     @DisplayName("Ручка получения брони возвращает 200 и json брони")
     void shouldGetBookingById() throws Exception {
+
         Booking booking = getBooking();
         User user = getUser();
         BookingResponse response = getBookingResponse();
-        
-        when(bookingService.getById(anyLong(), anyLong()))
-                .thenReturn(Optional.of(booking));
+        when(bookingService.getById(anyLong(), anyLong())).thenReturn(Optional.of(booking));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, booking.getId())
                         .header(SHARER_USER_HEADER, user.getId())

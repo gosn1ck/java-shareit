@@ -33,9 +33,7 @@ class UserServiceTest {
     @DisplayName("Пользователь добавлен в сервис")
     @Test
     void shouldAddUser() {
-        val dto = new UserDto();
-        dto.setName(NAME);
-        dto.setEmail(EMAIL);
+        val dto = new UserDto(NAME, EMAIL);
 
         val user = underTest.add(dto);
         assertNotNull(user.getId());
@@ -46,6 +44,10 @@ class UserServiceTest {
         val savedByIdUser = optionalUser.get();
         assertEquals(dto.getName(), savedByIdUser.getName());
         assertEquals(dto.getEmail(), savedByIdUser.getEmail());
+
+        val users = underTest.getAll();
+        val userFromList = users.stream().filter(value -> value.getId().equals(user.getId())).findFirst();
+        assertTrue(userFromList.isPresent());
 
     }
 
@@ -109,9 +111,9 @@ class UserServiceTest {
         val dtoSameEmail = new UserDto();
         dtoSameEmail.setEmail(EMAIL);
 
-        assertThrows(DataIntegrityViolationException.class, () ->
+        val exception = assertThrows(DataIntegrityViolationException.class, () ->
                 underTest.update(dtoSameEmail, userNextUser.getId()));
-//        assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exceptionUser.getMessage());
+        //assertEquals(String.format("user with email %s already exists", dtoSameEmail.getEmail()), exception.getMessage());
 
     }
 
