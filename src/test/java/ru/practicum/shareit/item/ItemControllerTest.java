@@ -7,14 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.CommentMapperImpl;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.mapper.ItemMapperImpl;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +52,7 @@ class ItemControllerTest {
     private static final String UPDATED_DESCRIPTION = "Yet another description";
     private static final String END_POINT_PATH = "/items";
     private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
+    private static final String END_POINT_PATH_COMMENT = END_POINT_PATH_WITH_ID + "/comment";
     private static final String END_POINT_PATH_SEARCH = END_POINT_PATH + "/search";
     private static final String SHARER_USER_HEADER = "X-Sharer-User-Id";
     private static final String TEXT_PARAM = "text";
@@ -112,6 +117,22 @@ class ItemControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    @DisplayName("Ручка создания по валидному запросу вещи, но без валидного item request id возвращает 400")
+    void shouldNotCreateItemWithoutValidRequestId() throws Exception {
+        ItemDto dto = getDto();
+        Item item = getItem();
+        dto.setRequestId(9999L);
+        given(itemService.add(dto, 1L)).willThrow(NotFoundException.class);
+
+        mvc.perform(post(END_POINT_PATH)
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
 
     }
 
@@ -332,6 +353,26 @@ class ItemControllerTest {
 
     }
 
+    @Test
+    @DisplayName("Ручка создания комментария")
+    void shouldCreateComment() throws Exception {
+        ItemDto dto = getDto();
+        Item item = getItem();
+        CommentDto commentDto = getCommentDto();
+        Comment comment = getComment();
+
+        given(itemService.add(dto, item.getOwner().getId())).willReturn(item);
+        given(itemService.addComment(commentDto, item.getId(), item.getOwner().getId())).willReturn(comment);
+
+        mvc.perform(post(END_POINT_PATH_COMMENT, item.getId())
+                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(commentDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(comment.getId()))
+                .andExpect(jsonPath("$.text").value(comment.getText()));
+    }
+
     private static ItemDto getDto() {
         ItemDto dto = new ItemDto();
         dto.setName(NAME);
@@ -356,6 +397,23 @@ class ItemControllerTest {
         user.setName("Ivan");
         user.setId(1L);
         return user;
+    }
+
+    private static CommentDto getCommentDto() {
+        var dto = new CommentDto();
+        dto.setAuthorName("Ivan");
+        dto.setCreated(LocalDateTime.of(2023, 06, 23, 19, 22));
+        dto.setText("Это комментарий");
+        return dto;
+    }
+
+    private static Comment getComment() {
+        var comment = new Comment();
+        comment.setId(1L);
+        comment.setItem(getItem());
+        comment.setAuthor(getUser());
+        comment.setText("Это комментарий");
+        return comment;
     }
 
 }

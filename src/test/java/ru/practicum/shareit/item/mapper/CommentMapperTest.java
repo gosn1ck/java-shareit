@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +45,10 @@ class CommentMapperTest {
         assertEquals(request.getText(), entity.getText());
         assertEquals(request.getCreated(), entity.getCreated());
         assertEquals(request.getAuthorName(), entity.getAuthor().getName());
+
+        val entityList = List.of(entity);
+        val responseList = underTest.entitiesToCommentResponses(entityList);
+        assertEquals(entityList.size(), responseList.size());
 
     }
 

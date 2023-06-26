@@ -68,7 +68,7 @@ class BookingDtoValidTest {
     @Test
     void shouldCheckBookingStartBeforeEndInvalidField() {
         val dto = new BookingDto();
-        dto.setStart(LocalDateTime.now().plusHours(1));
+        dto.setStart(LocalDateTime.now().plusHours(2));
         dto.setEnd(LocalDateTime.now().plusHours(1));
 
         Set<ConstraintViolation<BookingDto>> validates = underTest.validate(dto);

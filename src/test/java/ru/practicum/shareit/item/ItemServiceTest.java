@@ -12,6 +12,9 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.RequestService;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -34,11 +37,15 @@ class ItemServiceTest {
     @Autowired
     private BookingService bookingService;
     @Autowired
+    private RequestService requestService;
+    @Autowired
     private UserRepository userRepository;
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private ItemRequestRepository itemRequestRepository;
 
     private static final String NAME = "Screwdriver";
     private static final String UPDATED_NAME = "Screwdriver accumulated";
@@ -53,6 +60,7 @@ class ItemServiceTest {
         userRepository.deleteAll();
         commentRepository.deleteAll();
         bookingRepository.deleteAll();
+        itemRequestRepository.deleteAll();
     }
 
     @DisplayName("Вещь добавлна в сервис")
@@ -96,6 +104,36 @@ class ItemServiceTest {
                 underTest.add(dto, 9999L));
         assertEquals("user with id 9999 not found", exception.getMessage());
 
+    }
+
+    @DisplayName("Вещь не добавляется в сервис с неизвестным запросом")
+    @Test
+    void shouldNotAddItemWithRequestId() {
+        var dto = getDto();
+        dto.setRequestId(9999L);
+        var userDto = getUserDto();
+
+        val user = userService.add(userDto);
+
+        val exception = assertThrows(NotFoundException.class, () ->
+                underTest.add(dto, user.getId()));
+        assertEquals("item request with id 9999 not found", exception.getMessage());
+
+    }
+
+    @DisplayName("Вещь добавляется в сервис с известным запросом")
+    @Test
+    void shouldAddItemWithRequestId() {
+        val userDto = getUserDto();
+        val user = userService.add(userDto);
+        val itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setDescription("запрос");
+        val request = requestService.add(itemRequestDto, user.getId());
+        val dto = getDto();
+        dto.setRequestId(request.getId());
+
+        val item = underTest.add(dto, user.getId());
+        assertEquals(item.getRequest().getId(), request.getId());
     }
 
     @DisplayName("Вещь обновлена в сервисе если она там есть")

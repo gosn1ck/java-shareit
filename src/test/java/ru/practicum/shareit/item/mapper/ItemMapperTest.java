@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import static java.lang.Boolean.TRUE;
@@ -42,6 +43,11 @@ class ItemMapperTest {
         assertEquals(request.getName(), item.getName());
         assertEquals(request.getDescription(), item.getDescription());
         assertEquals(request.getAvailable(), item.getAvailable());
+
+        item.setRequest(getItemRequest());
+        val requestWithRequest = underTest.entityToItemResponse(item);
+        assertEquals(requestWithRequest.getRequestId(), item.getRequest().getId());
+
     }
 
     @DisplayName("Вещь мэпится в вещь для ответа контроллера")
@@ -116,6 +122,13 @@ class ItemMapperTest {
         user.setName("Ivan");
         user.setId(1L);
         return user;
+    }
+
+    private static ItemRequest getItemRequest() {
+        var request = new ItemRequest();
+        request.setDescription("Desc");
+        request.setId(1L);
+        return request;
     }
 
 }

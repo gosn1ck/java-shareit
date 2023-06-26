@@ -61,7 +61,8 @@ class ItemRequestControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(response)));
+                .andExpect(jsonPath("$.id").value(response.getId()))
+                .andExpect(jsonPath("$.description").value(response.getDescription()));
     }
 
     @Test
@@ -99,19 +100,19 @@ class ItemRequestControllerTest {
 
     @Test
     @DisplayName("Ручка получения списка запросов возвращает 200 и json запросов")
-    void shouldGetRequestorItemRequest() throws Exception {
-//        var user = getUser();
-//        var itemRequest = getItemRequest();
-//        var response = getItemRequestResponse();
-//
-//        when(requestService.getAllRequestor(anyLong())).thenReturn(List.of(itemRequest));
-//
-//        mvc.perform(get(END_POINT_PATH_WITH_ALL)
-//                        .header(SHARER_USER_HEADER, user.getId()))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$", hasSize(1)))
-//                .andExpect(jsonPath("$[0].id").value(response.getId()))
-//                .andExpect(jsonPath("$[0].description").value(response.getDescription()));
+    void shouldGetAllRequestorItemRequests() throws Exception {
+        var user = getUser();
+        var itemRequest = getItemRequest();
+        var response = getItemRequestResponse();
+
+        when(requestService.getAllRequestor(anyLong())).thenReturn(List.of(itemRequest));
+
+        mvc.perform(get(END_POINT_PATH)
+                        .header(SHARER_USER_HEADER, user.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(response.getId()))
+                .andExpect(jsonPath("$[0].description").value(response.getDescription()));
     }
 
     private static ItemRequestDto getDto() {

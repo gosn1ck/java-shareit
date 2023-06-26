@@ -115,6 +115,50 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("Ручка получения всех бронирований бронировавшего, возвращает 400")
+    void shouldNotGetAllByBookerInvalidParams() throws Exception {
+        mvc.perform(get(END_POINT_PATH)
+                        .header(SHARER_USER_HEADER, 1L)
+                        .param("from", "-1")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(get(END_POINT_PATH)
+                        .header(SHARER_USER_HEADER, 1L)
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(get(END_POINT_PATH)
+                        .header(SHARER_USER_HEADER, 1L)
+                        .param("from", "2")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Ручка получения всех бронирований владельца, возвращает 400")
+    void shouldNotGetAllByOwnerInvalidParams() throws Exception {
+        mvc.perform(get(END_POINT_PATH)
+                        .header(END_POINT_PATH_OWNER, 1L)
+                        .param("from", "-1")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(get(END_POINT_PATH)
+                        .header(END_POINT_PATH_OWNER, 1L)
+                        .param("from", "-1")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(get(END_POINT_PATH)
+                        .header(END_POINT_PATH_OWNER, 1L)
+                        .param("from", "2")
+                        .param("size", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("Ручка получения брони возвращает 200 и json брони")
     void shouldGetBookingById() throws Exception {
 
