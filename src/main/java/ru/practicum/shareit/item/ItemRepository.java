@@ -16,4 +16,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             nativeQuery = true)
     List<Item> findByNameOrDescription(String searchString);
 
+    List<Item> findAllByRequestId(Long requestId);
+
 }

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.exception.InternalServerException;
+import ru.practicum.shareit.exception.ClientErrorException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.mapper.UserMapperImpl;
@@ -97,12 +97,12 @@ class UserControllerTest {
 
         UserDto sameEmail = getDto();
 
-        given(userService.add(sameEmail)).willThrow(InternalServerException.class);
+        given(userService.add(sameEmail)).willThrow(ClientErrorException.class);
 
         mvc.perform(post(END_POINT_PATH)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sameEmail)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isConflict());
     }
 
     @Test

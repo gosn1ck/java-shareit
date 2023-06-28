@@ -17,4 +17,5 @@ public class ItemDto {
     private String description;
     @NotNull(message = "Available field should not be empty")
     private Boolean available;
+    private Long requestId;
 }
