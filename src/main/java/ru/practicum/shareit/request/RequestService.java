@@ -56,22 +56,23 @@ public class RequestService {
         return itemRequestRepository.findAllByRequestorNotOrderByCreatedAsc(user, page);
     }
 
+    @Transactional(readOnly = true)
     public ItemRequest getItemRequest(Long id) {
         return itemRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("item request with id %d not found", id));
     }
 
-
-    private User getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("user with id %d not found", id));
-    }
-
+    @Transactional(readOnly = true)
     public List<ItemItemRequestResponse> itemsByItemRequestId(Long id) {
         return itemRepository.findAllByRequestId(id)
                 .stream()
                 .map(itemMapper::entityToItemRequestResponse)
                 .collect(Collectors.toList());
+    }
+
+    private User getUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("user with id %d not found", id));
     }
 
 }
