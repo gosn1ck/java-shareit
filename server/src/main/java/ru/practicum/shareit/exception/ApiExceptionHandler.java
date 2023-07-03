@@ -1,0 +1,59 @@
+package ru.practicum.shareit.exception;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import javax.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolation;
+import java.time.ZonedDateTime;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.*;
+
+@ControllerAdvice
+@Slf4j
+public class ApiExceptionHandler {
+
+    @ExceptionHandler(value = NotFoundException.class)
+    public ResponseEntity<ApiException> handleException(NotFoundException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(NOT_FOUND, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = ClientErrorException.class)
+    public ResponseEntity<ApiException> handleException(ClientErrorException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(CONFLICT, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, CONFLICT);
+    }
+
+    @ExceptionHandler(value = MissingRequestHeaderException.class)
+    public ResponseEntity<ApiException> handleException(MissingRequestHeaderException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(BAD_REQUEST, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<ApiException> handleException(BadRequestException e) {
+        log.error(e.getMessage(), e);
+        ApiException exception = new ApiException(BAD_REQUEST, e.getMessage(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<ApiException> handleException(ConstraintViolationException e) {
+        log.error(e.getMessage(), e);
+        var errors = e.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
+        ApiException exception = new ApiException(BAD_REQUEST, errors.toString(), ZonedDateTime.now());
+        return new ResponseEntity<>(exception, BAD_REQUEST);
+    }
+
+}
