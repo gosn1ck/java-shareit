@@ -6,10 +6,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.ConstraintViolation;
 import java.time.ZonedDateTime;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -42,17 +39,6 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiException> handleException(BadRequestException e) {
         log.error(e.getMessage(), e);
         ApiException exception = new ApiException(BAD_REQUEST, e.getMessage(), ZonedDateTime.now());
-        return new ResponseEntity<>(exception, BAD_REQUEST);
-    }
-
-    @ExceptionHandler(value = ConstraintViolationException.class)
-    public ResponseEntity<ApiException> handleException(ConstraintViolationException e) {
-        log.error(e.getMessage(), e);
-        var errors = e.getConstraintViolations()
-                .stream()
-                .map(ConstraintViolation::getMessage)
-                .collect(Collectors.toList());
-        ApiException exception = new ApiException(BAD_REQUEST, errors.toString(), ZonedDateTime.now());
         return new ResponseEntity<>(exception, BAD_REQUEST);
     }
 

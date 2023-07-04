@@ -59,27 +59,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email").value(user.getEmail()));
     }
 
-//    @Test
-//    @DisplayName("Ручка создания по не валидному запросу пользователя возвращает 400")
-//    void shouldNotCreateUserWithBadContent() throws Exception {
-//        var dto = new UserDto();
-//        dto.setEmail(" ");
-//        dto.setName(NAME);
-//
-//        mvc.perform(post(END_POINT_PATH)
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isBadRequest());
-//
-//        dto = new UserDto();
-//        dto.setName(NAME);
-//
-//        mvc.perform(post(END_POINT_PATH)
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isBadRequest());
-//    }
-
     @Test
     @DisplayName("Ручка создания не добавляет пользователя с существующим email, возвращает 409")
     void shouldNotCreateUserWithSameEmail() throws Exception {

@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.mapper.BookingMapperImpl;
+import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.item.dto.ItemBookerResponse;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserBookerResponse;
@@ -113,28 +114,6 @@ class BookingControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(response))));
     }
 
-//    @Test
-//    @DisplayName("Ручка получения всех бронирований бронировавшего, возвращает 400")
-//    void shouldNotGetAllByBookerInvalidParams() throws Exception {
-//        mvc.perform(get(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, 1L)
-//                        .param("from", "-1")
-//                        .param("size", "-1"))
-//                .andExpect(status().isBadRequest());
-//
-//        mvc.perform(get(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, 1L)
-//                        .param("from", "-1")
-//                        .param("size", "10"))
-//                .andExpect(status().isBadRequest());
-//
-//        mvc.perform(get(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, 1L)
-//                        .param("from", "2")
-//                        .param("size", "-1"))
-//                .andExpect(status().isBadRequest());
-//    }
-
     @Test
     @DisplayName("Ручка получения всех бронирований владельца, возвращает 400")
     void shouldNotGetAllByOwnerInvalidParams() throws Exception {
@@ -173,19 +152,19 @@ class BookingControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
 
-//    @Test
-//    @DisplayName("Ручка получения брони возвращает 400 из-за не корректного параметра State")
-//    void shouldNotGetAllByOwner() throws Exception {
-//        User user = getUser();
-//
-//        when(bookingService.getAllBooker(anyLong(), eq(BookingState.UNSUPPORTED_STATUS), anyInt(), anyInt()))
-//                .thenThrow(BadRequestException.class);
-//
-//        mvc.perform(get(END_POINT_PATH)
-//                        .param(STATE_PARAM, "text")
-//                        .header(SHARER_USER_HEADER, user.getId()))
-//                .andExpect(status().isBadRequest());
-//    }
+    @Test
+    @DisplayName("Ручка получения брони возвращает 400 из-за не корректного параметра State")
+    void shouldNotGetAllByOwner() throws Exception {
+        User user = getUser();
+
+        when(bookingService.getAllBooker(anyLong(), eq(BookingState.UNSUPPORTED_STATUS), anyInt(), anyInt()))
+                .thenThrow(BadRequestException.class);
+
+        mvc.perform(get(END_POINT_PATH)
+                        .param(STATE_PARAM, "text")
+                        .header(SHARER_USER_HEADER, user.getId()))
+                .andExpect(status().isBadRequest());
+    }
 
     private static BookingDto getDto() {
         BookingDto dto = new BookingDto();

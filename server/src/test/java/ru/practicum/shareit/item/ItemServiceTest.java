@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponse;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.RequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -264,6 +265,38 @@ class ItemServiceTest {
         assertEquals(String.format("item with id 9999 not found", item.getId()), exception.getMessage());
 
     }
+
+    @DisplayName("Проверка дополнительных полей бронирования вещи, последнее и следующее бронирование")
+    @Test
+    void shouldUpdateBookingFields() {
+        var ownerDto = getUserDto();
+        val owner = userService.add(ownerDto);
+
+        var itemDto = getDto();
+        var bookerDto = new UserDto("Booker", "booker@yandex.ru");
+        val booker = userService.add(bookerDto);
+        val item = underTest.add(itemDto, owner.getId());
+
+        var bookingDto = new BookingDto(LocalDateTime.now().minusDays(1),
+                LocalDateTime.now().plusDays(1), item.getId());
+
+        var booking = bookingService.add(bookingDto, booker.getId());
+        bookingService.approve(booking.getId(), owner.getId(), TRUE);
+
+        bookingDto = new BookingDto(LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(1).plusHours(1), item.getId());
+
+        booking = bookingService.add(bookingDto, booker.getId());
+        bookingService.approve(booking.getId(), owner.getId(), TRUE);
+
+        var itemRequest = new ItemResponse();
+        itemRequest.setId(item.getId());
+        var updatedItemRequest = underTest.updateBookingFields(itemRequest);
+        assertNotNull(updatedItemRequest.getLastBooking());
+        assertNotNull(updatedItemRequest.getNextBooking());
+
+    }
+
 
     private static ItemDto getDto() {
         val dto = new ItemDto();

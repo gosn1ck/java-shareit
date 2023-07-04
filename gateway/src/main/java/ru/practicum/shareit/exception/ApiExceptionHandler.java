@@ -10,7 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -40,6 +43,16 @@ public class ApiExceptionHandler {
     public ResponseEntity<Map<String, String>> handleException(MethodArgumentNotValidException e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(Map.of("error", "not valid argument"), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<Map<String, String>> handleException(ConstraintViolationException e) {
+        log.error(e.getMessage(), e);
+        var errors = e.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(Map.of("error", errors.toString()), BAD_REQUEST);
     }
 
 }

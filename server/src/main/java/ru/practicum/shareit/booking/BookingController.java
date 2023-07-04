@@ -4,19 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponse;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.exception.BadRequestException;
 
 import java.net.URI;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
-@Validated
 @RestController
 @RequestMapping(path = "/bookings")
 public class BookingController {
@@ -67,7 +66,7 @@ public class BookingController {
             @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get owner bookings by user id: {}, state: {} ",  userId, stateString);
         BookingState state = BookingState.from(stateString)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateString));
+                .orElseThrow(() -> new BadRequestException("Unknown state: " + stateString));
         var response = bookingService.getAllOwner(userId, state, from, size);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
@@ -80,7 +79,7 @@ public class BookingController {
             @RequestParam(defaultValue = "10") Integer size) {
         log.info("Get all bookings by user id: {}, state: {} ",  userId, stateString);
         BookingState state = BookingState.from(stateString)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateString));
+                .orElseThrow(() -> new BadRequestException("Unknown state: " + stateString));
         var response = bookingService.getAllBooker(userId, state, from, size);
         return ResponseEntity.ok(bookingMapper.entitiesToBookingResponses(response));
     }
