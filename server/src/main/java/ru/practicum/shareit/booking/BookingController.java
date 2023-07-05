@@ -14,6 +14,8 @@ import ru.practicum.shareit.exception.BadRequestException;
 import java.net.URI;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -26,7 +28,7 @@ public class BookingController {
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BookingResponse> add(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @RequestBody BookingDto dto) {
         log.info("New booking registration {}; user id {}", dto, userId);
         var savedBooking = bookingService.add(dto, userId);
@@ -39,7 +41,7 @@ public class BookingController {
 
     @PatchMapping(path = "/{id}")
     public ResponseEntity<BookingResponse> approve(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @PathVariable("id") Long id,
             @RequestParam Boolean approved) {
         log.info("approve item by id: {}; user id: {}", id, userId);
@@ -49,7 +51,7 @@ public class BookingController {
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<BookingResponse> getById(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @PathVariable("id") Long id) {
         log.info("Get booking by id: {}, user id: {} ", id, userId);
         var response = bookingService.getById(id, userId);
@@ -60,7 +62,7 @@ public class BookingController {
 
     @GetMapping(path = "/owner")
     public ResponseEntity<List<BookingResponse>> getAllOwner(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @RequestParam(name = "state", defaultValue = "ALL") String stateString,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
@@ -73,7 +75,7 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAllBooker(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @RequestParam(name = "state", defaultValue = "ALL") String stateString,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {

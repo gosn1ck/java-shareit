@@ -31,6 +31,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 @WebMvcTest({ItemController.class, ItemMapperImpl.class, CommentMapperImpl.class})
 class ItemControllerTest {
@@ -54,7 +55,6 @@ class ItemControllerTest {
     private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
     private static final String END_POINT_PATH_COMMENT = END_POINT_PATH_WITH_ID + "/comment";
     private static final String END_POINT_PATH_SEARCH = END_POINT_PATH + "/search";
-    private static final String SHARER_USER_HEADER = "X-Sharer-User-Id";
     private static final String TEXT_PARAM = "text";
 
     @Test
@@ -66,7 +66,7 @@ class ItemControllerTest {
         given(itemService.add(dto, item.getOwner().getId())).willReturn(item);
 
         mvc.perform(post(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
@@ -75,38 +75,6 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available").value(item.getAvailable()))
                 .andExpect(jsonPath("$.description").value(item.getDescription()));
     }
-
-//    @Test
-//    @DisplayName("Ручка создания по не валидному запросу вещи возвращает 400")
-//    void shouldNotCreateItemWithBadContent() throws Exception {
-//        ItemDto dto = getDto();
-//        dto.setName(null);
-//        Item item = getItem();
-//
-//        mvc.perform(post(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, item.getOwner().getId())
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isBadRequest());
-//
-//        dto.setName(NAME);
-//        dto.setDescription(null);
-//
-//        mvc.perform(post(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, item.getOwner().getId())
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isBadRequest());
-//
-//        dto.setDescription(DESCRIPTION);
-//        dto.setAvailable(null);
-//
-//        mvc.perform(post(END_POINT_PATH)
-//                        .header(SHARER_USER_HEADER, item.getOwner().getId())
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isBadRequest());
-//    }
 
     @Test
     @DisplayName("Ручка создания по валидному запросу вещи, но без user id возвращает 400")
@@ -129,7 +97,7 @@ class ItemControllerTest {
         given(itemService.add(dto, 1L)).willThrow(NotFoundException.class);
 
         mvc.perform(post(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNotFound());
@@ -155,7 +123,7 @@ class ItemControllerTest {
         given(itemService.update(dtoOnlyName, 1L, item.getOwner().getId())).willReturn(Optional.of(updatedItem));
 
         mvc.perform(patch(END_POINT_PATH_WITH_ID, updatedItem.getId())
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoOnlyName)))
                 .andExpect(status().isOk())
@@ -185,7 +153,7 @@ class ItemControllerTest {
         given(itemService.update(dtoOnlyDescription, 1L, item.getOwner().getId())).willReturn(Optional.of(updatedItem));
 
         mvc.perform(patch(END_POINT_PATH_WITH_ID, updatedItem.getId())
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoOnlyDescription)))
                 .andExpect(status().isOk())
@@ -215,7 +183,7 @@ class ItemControllerTest {
         given(itemService.update(dtoOnlyAvailable, 1L, item.getOwner().getId())).willReturn(Optional.of(updatedItem));
 
         mvc.perform(patch(END_POINT_PATH_WITH_ID, updatedItem.getId())
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dtoOnlyAvailable)))
                 .andExpect(status().isOk())
@@ -252,7 +220,7 @@ class ItemControllerTest {
         given(itemService.findById(item.getId())).willReturn(Optional.of(item));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, item.getId())
-                        .header(SHARER_USER_HEADER, 1L))
+                        .header(USER_HEADER, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(item.getId()))
                 .andExpect(jsonPath("$.name").value(item.getName()))
@@ -271,7 +239,7 @@ class ItemControllerTest {
         given(itemService.getAllByUserId(item.getOwner().getId())).willReturn(allItems);
 
         mvc.perform(get(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId()))
+                        .header(USER_HEADER, item.getOwner().getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(item.getId()))
@@ -298,7 +266,7 @@ class ItemControllerTest {
         String searchByDescription = item.getDescription();
 
         mvc.perform(get(END_POINT_PATH_SEARCH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .param(TEXT_PARAM, searchByName))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -308,7 +276,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description").value(item.getDescription()));
 
         mvc.perform(get(END_POINT_PATH_SEARCH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .param(TEXT_PARAM, searchByDescription))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -318,7 +286,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].description").value(item.getDescription()));
 
         mvc.perform(get(END_POINT_PATH_SEARCH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .param(TEXT_PARAM, empty))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
@@ -340,13 +308,13 @@ class ItemControllerTest {
         String searchByDescription = item.getDescription();
 
         mvc.perform(get(END_POINT_PATH_SEARCH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .param(TEXT_PARAM, searchByName))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
 
         mvc.perform(get(END_POINT_PATH_SEARCH)
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .param(TEXT_PARAM, searchByDescription))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
@@ -365,7 +333,7 @@ class ItemControllerTest {
         given(itemService.addComment(commentDto, item.getId(), item.getOwner().getId())).willReturn(comment);
 
         mvc.perform(post(END_POINT_PATH_COMMENT, item.getId())
-                        .header(SHARER_USER_HEADER, item.getOwner().getId())
+                        .header(USER_HEADER, item.getOwner().getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isOk())

@@ -14,13 +14,14 @@ import ru.practicum.shareit.item.dto.ItemResponse;
 import javax.validation.Valid;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/items")
 public class ItemController {
     private final ItemClient client;
-    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
     public ResponseEntity<List<ItemResponse>> getAll(@RequestHeader(USER_HEADER) Long userId) {

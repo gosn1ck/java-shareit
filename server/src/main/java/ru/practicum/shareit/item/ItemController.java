@@ -17,6 +17,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -25,7 +27,6 @@ public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
-    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
     public ResponseEntity<List<ItemResponse>> getAll(@RequestHeader(USER_HEADER) Long userId) {

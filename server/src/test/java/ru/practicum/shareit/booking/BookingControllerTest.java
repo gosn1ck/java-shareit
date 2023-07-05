@@ -30,6 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 @WebMvcTest({BookingController.class, BookingMapperImpl.class})
 class BookingControllerTest {
@@ -46,7 +47,6 @@ class BookingControllerTest {
     private static final String END_POINT_PATH = "/bookings";
     private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
     private static final String END_POINT_PATH_OWNER = END_POINT_PATH + "/owner";
-    private static final String SHARER_USER_HEADER = "X-Sharer-User-Id";
     private static final String APPROVED_PARAM = "approved";
     private static final String STATE_PARAM = "state";
 
@@ -61,7 +61,7 @@ class BookingControllerTest {
         given(bookingService.add(dto, user.getId())).willReturn(booking);
 
         mvc.perform(post(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, user.getId())
+                        .header(USER_HEADER, user.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
@@ -80,7 +80,7 @@ class BookingControllerTest {
         given(bookingService.approve(booking.getId(), user.getId(), TRUE)).willReturn(booking);
         mvc.perform(patch(END_POINT_PATH_WITH_ID, booking.getId())
                         .param(APPROVED_PARAM, "true")
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
@@ -95,7 +95,7 @@ class BookingControllerTest {
         when(bookingService.getAllOwner(anyLong(), eq(BookingState.ALL), anyInt(), anyInt()))
                 .thenReturn(List.of(booking));
         mvc.perform(get(END_POINT_PATH_OWNER)
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(response))));
     }
@@ -109,7 +109,7 @@ class BookingControllerTest {
         when(bookingService.getAllBooker(anyLong(), eq(BookingState.ALL), anyInt(), anyInt()))
                 .thenReturn(List.of(booking));
         mvc.perform(get(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, 2L))
+                        .header(USER_HEADER, 2L))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(response))));
     }
@@ -146,7 +146,7 @@ class BookingControllerTest {
         when(bookingService.getById(anyLong(), anyLong())).thenReturn(Optional.of(booking));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, booking.getId())
-                        .header(SHARER_USER_HEADER, user.getId())
+                        .header(USER_HEADER, user.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(response)));
@@ -162,7 +162,7 @@ class BookingControllerTest {
 
         mvc.perform(get(END_POINT_PATH)
                         .param(STATE_PARAM, "text")
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isBadRequest());
     }
 

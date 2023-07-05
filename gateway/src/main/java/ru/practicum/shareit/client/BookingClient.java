@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResponse;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 import java.util.List;
 
@@ -14,8 +15,6 @@ import java.util.List;
         url = "${feign.url.booking}"
 )
 public interface BookingClient {
-
-    String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,7 +36,7 @@ public interface BookingClient {
 
     @GetMapping
     ResponseEntity<List<BookingResponse>> getAllBooker(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader(USER_HEADER) Long userId,
             @RequestParam(name = "state", defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size);

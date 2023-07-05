@@ -14,6 +14,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -22,7 +24,6 @@ public class ItemRequestController {
 
     private final RequestService requestService;
     private final ItemRequestMapper itemRequestMapper;
-    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

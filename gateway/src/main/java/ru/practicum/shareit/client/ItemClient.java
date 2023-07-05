@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponse;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 import java.util.List;
 
@@ -16,8 +17,6 @@ import java.util.List;
         url = "${feign.url.item}"
 )
 public interface ItemClient {
-
-    String USER_HEADER = "X-Sharer-User-Id";
 
     @GetMapping
     ResponseEntity<List<ItemResponse>> getAll(@RequestHeader(USER_HEADER) Long userId);

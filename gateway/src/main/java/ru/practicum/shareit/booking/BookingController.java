@@ -15,6 +15,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
+
 @Slf4j
 @RequiredArgsConstructor
 @Validated
@@ -23,7 +25,6 @@ import java.util.List;
 public class BookingController {
 
     private final BookingClient client;
-    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)

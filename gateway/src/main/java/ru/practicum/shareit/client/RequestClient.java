@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponse;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 import java.util.List;
 
@@ -14,8 +15,6 @@ import java.util.List;
         url = "${feign.url.request}"
 )
 public interface RequestClient {
-
-    String USER_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

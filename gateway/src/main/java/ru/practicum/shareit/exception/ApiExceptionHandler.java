@@ -33,8 +33,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(Map.of("error", message), HttpStatus.valueOf(e.status()));
     }
 
-    @ExceptionHandler({Throwable.class})
-    public ResponseEntity<Map<String, String>> handleException(Throwable e) {
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<Map<String, String>> handleException(Exception e) {
         log.error(e.getMessage());
         return new ResponseEntity<>(Map.of("error", e.getMessage()), INTERNAL_SERVER_ERROR);
     }

@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static ru.practicum.shareit.util.Constants.USER_HEADER;
 
 @WebMvcTest({ItemRequestController.class, ItemRequestMapperImpl.class})
 class ItemRequestControllerTest {
@@ -45,7 +46,6 @@ class ItemRequestControllerTest {
     private static final String END_POINT_PATH = "/requests";
     private static final String END_POINT_PATH_WITH_ID = END_POINT_PATH + "/{id}";
     private static final String END_POINT_PATH_WITH_ALL = END_POINT_PATH + "/all";
-    private static final String SHARER_USER_HEADER = "X-Sharer-User-Id";
 
     @Test
     @DisplayName("Ручка создания по валидному запросу возвращает 201 и json c id новым запросом")
@@ -57,7 +57,7 @@ class ItemRequestControllerTest {
         given(requestService.add(dto, user.getId())).willReturn(itemRequest);
 
         mvc.perform(post(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, user.getId())
+                        .header(USER_HEADER, user.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
@@ -75,7 +75,7 @@ class ItemRequestControllerTest {
         when(requestService.getById(anyLong(), anyLong())).thenReturn(Optional.of(itemRequest));
 
         mvc.perform(get(END_POINT_PATH_WITH_ID, itemRequest.getId())
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(response.getId()))
                 .andExpect(jsonPath("$.description").value(response.getDescription()));
@@ -91,7 +91,7 @@ class ItemRequestControllerTest {
         when(requestService.getAll(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemRequest));
 
         mvc.perform(get(END_POINT_PATH_WITH_ALL)
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(response.getId()))
@@ -108,7 +108,7 @@ class ItemRequestControllerTest {
         when(requestService.getAllRequestor(anyLong())).thenReturn(List.of(itemRequest));
 
         mvc.perform(get(END_POINT_PATH)
-                        .header(SHARER_USER_HEADER, user.getId()))
+                        .header(USER_HEADER, user.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(response.getId()))
